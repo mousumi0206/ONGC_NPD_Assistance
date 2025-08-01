@@ -73,9 +73,12 @@ for doc_name in st.session_state.doc_chats.keys():
         st.session_state.selected_doc = doc_name
 
 # --- Embedding Setup ---
-embed_model = HuggingFaceEmbedding(model_name="sentence-transformers/all-MiniLM-L6-v2")
+embed_model = HuggingFaceEmbedding(
+    model_name="sentence-transformers/all-MiniLM-L6-v2",
+    device="cpu"  # 👈 Force CPU to avoid CUDA errors on Streamlit Cloud
+)
 Settings.embed_model = embed_model
-Settings.llm = None  # ✅ disables OpenAI fallback
+Settings.llm = None  # disables OpenAI fallback
 
 # --- Document Processing ---
 doc_dir = "uploaded_docs"
