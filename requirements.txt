@@ -1,7 +1,10 @@
 streamlit
 groq
-llama-index
+llama-index[embed-huggingface]
 sentence-transformers
+transformers
+torch
 python-dotenv
 faiss-cpu
 PyMuPDF
+
