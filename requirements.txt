@@ -1,7 +1,7 @@
 streamlit
 groq
 llama-index
-llama-index-embeddings-huggingface
+llama-index-embeddings-huggingface==0.5.0
 sentence-transformers
 transformers
 torch
