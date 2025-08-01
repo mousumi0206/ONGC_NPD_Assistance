@@ -8,4 +8,5 @@ torch
 python-dotenv
 faiss-cpu
 PyMuPDF
-
+python-docx
+pdfminer.six
