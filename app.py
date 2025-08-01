@@ -51,12 +51,8 @@ from llama_index.core import VectorStoreIndex, SimpleDirectoryReader, Document
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.core import Settings
 
-# --- Load environment variables ---
-load_dotenv()
-groq_api_key = os.getenv("GROQ_API_KEY")
-if not groq_api_key:
-    st.error("❌ GROQ_API_KEY not found. Please set it in Streamlit Secrets.")
-    st.stop()
+# --- Load API key from Streamlit Secrets ---
+groq_api_key = st.secrets["GROQ_API_KEY"]
 
 client = Groq(api_key=groq_api_key)
 
