@@ -1,0 +1,7 @@
+streamlit
+groq
+llama-index
+sentence-transformers
+python-dotenv
+faiss-cpu
+PyMuPDF
