@@ -47,13 +47,18 @@ import shutil
 import stat
 from dotenv import load_dotenv
 from groq import Groq
-from llama_index.core import VectorStoreIndex, SimpleDirectoryReader
+from llama_index.core import VectorStoreIndex, SimpleDirectoryReader, Document
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.core import Settings
 
 # --- Load environment variables ---
 load_dotenv()
-client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+groq_api_key = os.getenv("GROQ_API_KEY")
+if not groq_api_key:
+    st.error("❌ GROQ_API_KEY not found. Please set it in Streamlit Secrets.")
+    st.stop()
+
+client = Groq(api_key=groq_api_key)
 
 # --- Session State Setup ---
 if "doc_chats" not in st.session_state:
@@ -77,30 +82,36 @@ Settings.embed_model = embed_model
 Settings.llm = None  # ✅ disables OpenAI fallback
 
 # --- Document Processing ---
+doc_dir = "uploaded_docs"
+docs = []
+
 if uploaded_docs:
-    doc_dir = "uploaded_docs"
     if os.path.exists(doc_dir):
         shutil.rmtree(doc_dir, onerror=lambda func, path, _: os.chmod(path, stat.S_IWRITE))
     os.makedirs(doc_dir, exist_ok=True)
 
     for doc in uploaded_docs:
-        with open(os.path.join(doc_dir, doc.name), "wb") as f:
+        path = os.path.join(doc_dir, doc.name)
+        with open(path, "wb") as f:
             f.write(doc.read())
 
-    # Use first uploaded doc as current
     current_doc = uploaded_docs[0].name
     st.session_state.selected_doc = current_doc
 
-    # Clear previous chat if new doc
     if current_doc not in st.session_state.doc_chats:
         st.session_state.doc_chats[current_doc] = []
 
-else:
-    doc_dir = "docs"  # fallback folder
+    reader = SimpleDirectoryReader(doc_dir)
+    docs = reader.load_data()
 
-# --- Load and index documents ---
-reader = SimpleDirectoryReader(doc_dir)
-docs = reader.load_data()
+elif os.path.exists("docs") and os.listdir("docs"):
+    reader = SimpleDirectoryReader("docs")
+    docs = reader.load_data()
+else:
+    st.warning("📂 No documents uploaded or found in fallback folder.")
+    st.stop()
+
+# --- Index and Query Engine ---
 index = VectorStoreIndex.from_documents(docs)
 query_engine = index.as_query_engine()
 
