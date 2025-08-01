@@ -1,6 +1,7 @@
 streamlit
 groq
-llama-index[embed-huggingface]
+llama-index
+llama-index-embeddings-huggingface
 sentence-transformers
 transformers
 torch
